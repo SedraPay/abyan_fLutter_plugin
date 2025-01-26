@@ -15,7 +15,7 @@ Abyan is an onboarding and KYC solution that helps businesses to verify their cu
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.platform = :ios, '13.0'
+  s.platform = :ios, '16.0'
 
   s.dependency 'Abyan', '~> 0.1.3'
   s.dependency 'Protobuf'

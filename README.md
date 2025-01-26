@@ -5,7 +5,7 @@ Abyan is an onboarding and KYC solution that helps businesses to verify their cu
 ## Getting Started
 
 ### iOS integration
-Ensure you set the minimum iOS version to 13.0 in podfile and xcode project.
+Ensure you set the minimum iOS version to 16.0 in podfile and xcode project.
 
 #### Needed iOS Permissions
 - Privacy - Camera Usage Description : To capture documents and take selfie
