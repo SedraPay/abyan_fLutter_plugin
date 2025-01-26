@@ -1,6 +1,6 @@
 name: abyan_plugin
 description: "Abyan is an onboarding and KYC solution that helps businesses to verify their customers' identities and documents. This plugin allows you to integrate Abyan SDKs into your Flutter app."
-version: 0.0.1
+version: 0.0.2
 homepage: https://sedrapay.com/
 
 environment:
