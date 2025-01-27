@@ -21,6 +21,10 @@ class AbyanPlugin {
     AbyanPluginPlatform.instance.listenForProducts();
   }
 
+  void listenForErrorProducts() {
+    AbyanPluginPlatform.instance.listenForErrorProducts();
+  }
+
   Future<void> sendFormDataRequestToiOS(int productId) {
     return AbyanPluginPlatform.instance.sendFormDataRequestToiOS(productId);
   }
@@ -41,6 +45,9 @@ class AbyanPlugin {
     AbyanPluginPlatform.instance.listenCardImages();
   }
 
+  void listenCardError() {
+    AbyanPluginPlatform.instance.listenCardError();
+  }
   void listenToCardData() {
     AbyanPluginPlatform.instance.listenToCardData();
   }
@@ -49,6 +56,9 @@ class AbyanPlugin {
     AbyanPluginPlatform.instance.listenToKYCData();
   }
 
+  void listenToKYCDataError() {
+    AbyanPluginPlatform.instance.listenToKYCDataError();
+  }
   Future<void> updateKYC(String kycField) {
     return AbyanPluginPlatform.instance.updateKYC(kycField);
   }
@@ -67,5 +77,10 @@ class AbyanPlugin {
 
   void listenToCloseJourney() {
     AbyanPluginPlatform.instance.listenToCloseJourney();
+  }
+
+
+  void listenToCloseJourneyWithError() {
+    AbyanPluginPlatform.instance.listenToCloseJourneyWithError();
   }
 }

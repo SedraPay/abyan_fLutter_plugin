@@ -62,6 +62,15 @@ class MethodChannelAbyanPlugin extends AbyanPluginPlatform {
     });
   }
 
+  void listenForErrorProducts() {
+    _productChannel.setMethodCallHandler((call) async {
+      if (call.method == "onErrorProducts") {
+        String errorMessage = call.arguments;
+        print("Error Products: $errorMessage");
+      }
+    });
+  }
+
   Future<void> sendFormDataRequestToiOS(int productId) async {
     try {
       await _formDataChannel.invokeMethod('fetchFormData', productId);
@@ -107,6 +116,14 @@ class MethodChannelAbyanPlugin extends AbyanPluginPlatform {
     });
   }
 
+  void listenCardError() {
+    _scanningChannel.setMethodCallHandler((call) async {
+      if (call.method == "onErrorCapturingDocuments") {
+        String errorMessage = call.arguments;
+        print("Error Card: $errorMessage");
+      }
+    });
+  }
   void listenToCardData() {
     _scanningChannel.setMethodCallHandler((call) async {
       if (call.method == "documentResponseData") {
@@ -126,6 +143,14 @@ class MethodChannelAbyanPlugin extends AbyanPluginPlatform {
     });
   }
 
+  void listenToKYCDataError() {
+    _scanningChannel.setMethodCallHandler((call) async {
+      if (call.method == "kycResponseError") {
+        String errorMessage = call.arguments;
+        print("Error KYC: $errorMessage");
+      }
+    });
+  }
   Future<void> updateKYC(String kycField) async {
     try {
       final jsonData = jsonEncode({'kycField': kycField});
@@ -158,6 +183,15 @@ class MethodChannelAbyanPlugin extends AbyanPluginPlatform {
     });
   }
 
+
+  void listenToFaceIDError() {
+    _livenessCheckChannel.setMethodCallHandler((call) async {
+      if (call.method == "ImageMatchingErrorResponseData") {
+        String errorMessage = call.arguments;
+        print("Error In Face ID scan: $errorMessage");
+      }
+    });
+  }
   Future<void> closeJourney(String customerID) async {
     try {
       await _closeJourneyChannel.invokeMethod('closeJourney', customerID);
@@ -173,6 +207,16 @@ class MethodChannelAbyanPlugin extends AbyanPluginPlatform {
     _closeJourneyChannel.setMethodCallHandler((call) async {
       if (call.method == "didFinishCloseJourneyWithSuccess") {
         log("Finish Close Journey Success");
+      }
+    });
+  }
+
+
+  void listenToCloseJourneyWithError() {
+    _closeJourneyChannel.setMethodCallHandler((call) async {
+      if (call.method == "didFinishCloseWithError") {
+        String errorMessage = call.arguments;
+        print("Error In Close Journey: $errorMessage");
       }
     });
   }

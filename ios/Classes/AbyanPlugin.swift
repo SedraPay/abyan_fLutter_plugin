@@ -171,11 +171,13 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
     // MARK: - AbyanDocumentsDelegate Methods
 
     public func didFinishWithError(error: AbyanError) {
-        // Handle error
+        scanCardIDChannel?.invokeMethod("onErrorCapturingDocuments", arguments: error.localizedDescription)
+
     }
 
     public func userFinishCapturingDocumentsWithError(documents: [AbyanDocument], error: AbyanError) {
-        // Handle error
+        scanCardIDChannel?.invokeMethod("onErrorCapturingDocuments", arguments: error.localizedDescription)
+
     }
 
     public func userFinishCapturingDocument(documents: [AbyanDocument]) {
@@ -196,17 +198,21 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
     }
 
     public func userFinishCapturingDocumentsWithError(documents: [AbyanDocument]) {
-        // Handle error
+        scanCardIDChannel?.invokeMethod("onErrorCapturingDocuments", arguments: error.localizedDescription)
+
     }
 
     public func userDidCloseCamera() {
-        // Handle camera close
+       scanCardIDChannel?.invokeMethod("onErrorCapturingDocuments", arguments: "The User Pressed on close camera button")
+
     }
 
     // MARK: - AbyanLivenessCheckDelegate Methods
 
     public func LivenessCheckPageError(error: AbyanError) {
-        print(error)
+       
+        livenessCheckChannel?.invokeMethod("ImageMatchingErrorResponseData", arguments: error.localizedDescription)
+
     }
 
     public func cameraAccessDeniedError(error: AbyanError) {
@@ -232,6 +238,8 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
 
     public func didPressCancel() {
         // Handle cancel
+        livenessCheckChannel?.invokeMethod("ImageMatchingErrorResponseData", arguments: "The User Pressed on cancel button")
+
     }
 
     public func LivenessCheckDone() {
@@ -253,7 +261,8 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
     }
 
     public func didGetError(errorMessage: String) {
-        // Handle error
+        livenessCheckChannel?.invokeMethod("ImageMatchingErrorResponseData", arguments: error.localizedDescription)
+
     }
 
     // MARK: - AbyanCloseJourneyDelegate Methods
@@ -263,7 +272,8 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
     }
 
     public func didFinishCloseJourneyWithError(error: AbyanError) {
-        // Handle error
+        closeJourneyChannel?.invokeMethod("didFinishCloseWithError", arguments: error.localizedDescription)
+
     }
 
     // MARK: - AbyanKYCDelegate Methods
@@ -273,7 +283,8 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
     }
 
     public func kycFinishedWithError(error: AbyanError) {
-        // Handle KYC error
+        scanCardIDChannel?.invokeMethod("kycResponseError", arguments: jsonString)
+
     }
 
     public func kycFields(fields: [AbyanKYCFieldItem]) {
@@ -289,7 +300,8 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
     // MARK: - AbyanProductsDelegate Methods
 
     public func productsFinishedWithError(error: AbyanError) {
-        // Handle product error
+        productChannel?.invokeMethod("onErrorProducts", arguments: error.localizedDescription)
+
     }
 
     public func products(products: ProductsResponse) {

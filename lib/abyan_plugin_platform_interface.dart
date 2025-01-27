@@ -44,6 +44,11 @@ abstract class AbyanPluginPlatform extends PlatformInterface {
     throw UnimplementedError('listenForProducts() has not been implemented.');
   }
 
+  void listenForErrorProducts() {
+    //this error also listen for get form Info
+    throw UnimplementedError('listenForErrorProducts() has not been implemented.');
+  }
+
   Future<void> sendFormDataRequestToiOS(int productId) {
     throw UnimplementedError('sendFormDataRequestToiOS() has not been implemented.');
   }
@@ -64,12 +69,19 @@ abstract class AbyanPluginPlatform extends PlatformInterface {
     throw UnimplementedError('listenCardImages() has not been implemented.');
   }
 
+  void listenCardError() {
+    throw UnimplementedError('listenCardError() has not been implemented.');
+  }
+
   void listenToCardData() {
     throw UnimplementedError('listenToCardData() has not been implemented.');
   }
 
   void listenToKYCData() {
     throw UnimplementedError('listenToKYCData() has not been implemented.');
+  }
+  void listenToKYCDataError() {
+    throw UnimplementedError('listenToKYCDataError() has not been implemented.');
   }
 
   Future<void> updateKYC(String kycField) {
@@ -84,11 +96,19 @@ abstract class AbyanPluginPlatform extends PlatformInterface {
     throw UnimplementedError('listenToFaceIDData() has not been implemented.');
   }
 
+  void listenToFaceIDError() {
+    throw UnimplementedError('listenToFaceIDError() has not been implemented.');
+  }
+
   Future<void> closeJourney(String customerID) {
     throw UnimplementedError('closeJourney() has not been implemented.');
   }
 
   void listenToCloseJourney() {
     throw UnimplementedError('listenToCloseJourney() has not been implemented.');
+  }
+
+  void listenToCloseJourneyWithError() {
+    throw UnimplementedError('listenToCloseJourneyWithError() has not been implemented.');
   }
 }
