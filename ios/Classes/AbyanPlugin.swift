@@ -193,12 +193,12 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
             Abyan.kyc.delegate = self
             Abyan.kyc.getOCRKYCFields(fieldValues: [], productId: self.selectedProduct ?? 0)
         } catch {
-            print("Failed to encode response to JSON: \(error.localizedDescription)")
+            print("Failed to encode response to JSON")
         }
     }
 
     public func userFinishCapturingDocumentsWithError(documents: [AbyanDocument]) {
-        scanCardIDChannel?.invokeMethod("onErrorCapturingDocuments", arguments: error.localizedDescription)
+        scanCardIDChannel?.invokeMethod("onErrorCapturingDocuments", arguments: "user Finish Capturing Documents With Error")
 
     }
 
@@ -256,12 +256,13 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
             let jsonString: String? = String(data: jsonData, encoding: .utf8)
             livenessCheckChannel?.invokeMethod("ImageMatchingResponseData", arguments: jsonString)
         } catch {
-            print("Failed to encode response to JSON: \(error.localizedDescription)")
+            livenessCheckChannel?.invokeMethod("ImageMatchingErrorResponseData", arguments: "Catch Error in did Get Image Matching Response Successfully")
+
         }
     }
 
     public func didGetError(errorMessage: String) {
-        livenessCheckChannel?.invokeMethod("ImageMatchingErrorResponseData", arguments: error.localizedDescription)
+        livenessCheckChannel?.invokeMethod("ImageMatchingErrorResponseData", arguments: errorMessage)
 
     }
 
@@ -283,7 +284,7 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
     }
 
     public func kycFinishedWithError(error: AbyanError) {
-        scanCardIDChannel?.invokeMethod("kycResponseError", arguments: jsonString)
+        scanCardIDChannel?.invokeMethod("kycResponseError", arguments: error.localizedDescription)
 
     }
 
@@ -293,7 +294,8 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
             let jsonString: String? = String(data: jsonData, encoding: .utf8)
             scanCardIDChannel?.invokeMethod("kycResponseData", arguments: jsonString)
         } catch {
-            print("Failed to encode fields to JSON: \(error.localizedDescription)")
+            scanCardIDChannel?.invokeMethod("kycResponseError", arguments: "Catch Error in kyc Fields ")
+
         }
     }
 
@@ -310,7 +312,8 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
             let jsonString: String? = String(data: jsonData, encoding: .utf8)
             productChannel?.invokeMethod("onProductsReceived", arguments: jsonString)
         } catch {
-            print("Failed to encode products to JSON: \(error.localizedDescription)")
+            productChannel?.invokeMethod("onErrorProducts", arguments: "Catch Error in get products")
+
         }
     }
 
@@ -320,7 +323,7 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
             let jsonString: String? = String(data: jsonData, encoding: .utf8)
             formDataChannel?.invokeMethod("onFormDataReceived", arguments: jsonString)
         } catch {
-            print("Failed to encode fields to JSON: \(error.localizedDescription)")
+            formDataChannel?.invokeMethod("emptyFormInfofields", arguments: "Catch Error in Form Info fields")
         }
     }
 
