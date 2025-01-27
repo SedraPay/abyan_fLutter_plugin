@@ -1,7 +1,7 @@
+import 'package:abyan_plugin/models/products.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'abyan_plugin_method_channel.dart';
-
 
 abstract class AbyanPluginPlatform extends PlatformInterface {
   /// Constructs a SomePluginPlatform.
@@ -24,91 +24,32 @@ abstract class AbyanPluginPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<void> createJourney(String journeyType) {
+  Future<String> createJourney(String journeyType) {
     throw UnimplementedError('createJourney() has not been implemented.');
   }
 
-  Future<void> listenForErrors() {
-    throw UnimplementedError('listenForErrors() has not been implemented.');
-  }
-
-  Future<void> listenForJourneyId() {
-    throw UnimplementedError('listenForJourneyId() has not been implemented.');
-  }
-
-  Future<void> fetchProducts() {
+  Future<List<Product>> fetchProducts() {
     throw UnimplementedError('fetchProducts() has not been implemented.');
   }
 
-  void listenForProducts() {
-    throw UnimplementedError('listenForProducts() has not been implemented.');
+  Future<String> sendFormDataRequest(int productId) {
+    throw UnimplementedError(
+        'sendFormDataRequestToiOS() has not been implemented.');
   }
 
-  void listenForErrorProducts() {
-    //this error also listen for get form Info
-    throw UnimplementedError('listenForErrorProducts() has not been implemented.');
-  }
-
-  Future<void> sendFormDataRequestToiOS(int productId) {
-    throw UnimplementedError('sendFormDataRequestToiOS() has not been implemented.');
-  }
-
-  void listenForFormData() {
-    throw UnimplementedError('listenForFormData() has not been implemented.');
-  }
-
-  void listenForEmptyFormInfo() {
-    throw UnimplementedError('listenForEmptyFormInfo() has not been implemented.');
-  }
-
-  Future<void> callScanCardID(int documentType) {
+  Future<String> callScanDocument(int documentType) {
     throw UnimplementedError('callScanCardID() has not been implemented.');
   }
 
-  void listenCardImages() {
-    throw UnimplementedError('listenCardImages() has not been implemented.');
+  Future<String> scanYourFaceID() {
+    throw UnimplementedError('scanYourFaceID() has not been implemented.');
   }
 
-  void listenCardError() {
-    throw UnimplementedError('listenCardError() has not been implemented.');
-  }
-
-  void listenToCardData() {
-    throw UnimplementedError('listenToCardData() has not been implemented.');
-  }
-
-  void listenToKYCData() {
-    throw UnimplementedError('listenToKYCData() has not been implemented.');
-  }
-  void listenToKYCDataError() {
-    throw UnimplementedError('listenToKYCDataError() has not been implemented.');
+  Future<String> closeJourney(String customerID) {
+    throw UnimplementedError('closeJourney() has not been implemented.');
   }
 
   Future<void> updateKYC(String kycField) {
     throw UnimplementedError('updateKYC() has not been implemented.');
-  }
-
-  Future<void> scanYourFaceID() {
-    throw UnimplementedError('scanYourFaceID() has not been implemented.');
-  }
-
-  void listenToFaceIDData() {
-    throw UnimplementedError('listenToFaceIDData() has not been implemented.');
-  }
-
-  void listenToFaceIDError() {
-    throw UnimplementedError('listenToFaceIDError() has not been implemented.');
-  }
-
-  Future<void> closeJourney(String customerID) {
-    throw UnimplementedError('closeJourney() has not been implemented.');
-  }
-
-  void listenToCloseJourney() {
-    throw UnimplementedError('listenToCloseJourney() has not been implemented.');
-  }
-
-  void listenToCloseJourneyWithError() {
-    throw UnimplementedError('listenToCloseJourneyWithError() has not been implemented.');
   }
 }

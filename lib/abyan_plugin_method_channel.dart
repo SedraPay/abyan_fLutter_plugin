@@ -1,223 +1,218 @@
-import 'abyan_plugin_platform_interface.dart';
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:abyan_plugin/models/products.dart';
 import 'package:flutter/services.dart';
+
+import 'abyan_plugin_platform_interface.dart';
 
 /// An implementation of [AbyanPluginPlatform] that uses method channels.
 class MethodChannelAbyanPlugin extends AbyanPluginPlatform {
   final MethodChannel _journeyChannel = const MethodChannel('createJourney');
-  final MethodChannel _journeyIdChannel = const MethodChannel('journeyIdChannel');
+  final MethodChannel _journeyIdChannel =
+      const MethodChannel('journeyIdChannel');
   final MethodChannel _productChannel = const MethodChannel('getProduct');
   final MethodChannel _formDataChannel = const MethodChannel('getFormData');
-  final MethodChannel _scanningChannel = const MethodChannel('scanCardIDChannel');
-  final MethodChannel _updateKYCChannel = const MethodChannel('updateKYCChannel');
-  final MethodChannel _livenessCheckChannel = const MethodChannel('livenessCheckChannel');
-  final MethodChannel _closeJourneyChannel = const MethodChannel('closeJourneyChannel');
-  final MethodChannel _errorChannel = const MethodChannel('didFinishCreatingJourneyWithError');
+  final MethodChannel _scanningChannel =
+      const MethodChannel('scanCardIDChannel');
+  final MethodChannel _updateKYCChannel =
+      const MethodChannel('updateKYCChannel');
+  final MethodChannel _livenessCheckChannel =
+      const MethodChannel('livenessCheckChannel');
+  final MethodChannel _closeJourneyChannel =
+      const MethodChannel('closeJourneyChannel');
+  final MethodChannel _errorChannel =
+      const MethodChannel('didFinishCreatingJourneyWithError');
 
-  Future<void> createJourney(String journeyType) async {
-    try {
-      await _journeyChannel.invokeMethod('createJourneyinAbyan', journeyType);
-    } on PlatformException catch (e) {
-      print("Failed to invoke method: '${e.message}'.");
-    } catch (e) {
-      print("catch an error = $e}");
-    }
-  }
+  @override
+  Future<String> createJourney(String journeyType) async {
+    final Completer<String> completer = Completer<String>();
 
-  Future<void> listenForErrors() async {
-    _errorChannel.setMethodCallHandler((call) async {
-      if (call.method == "didFinishCreatingJourneyWithError") {
-        String errorMessage = call.arguments;
-        print("Received AbyanError: $errorMessage");
-      }
-    });
-  }
-
-  Future<void> listenForJourneyId() async {
     _journeyIdChannel.setMethodCallHandler((call) async {
       if (call.method == "onJourneyIdReceived") {
         String journeyId = call.arguments;
-        print("Received journeyId: $journeyId");
+        completer.complete(journeyId);
       }
     });
-  }
 
-  Future<void> fetchProducts() async {
+    _errorChannel.setMethodCallHandler((call) async {
+      if (call.method == "didFinishCreatingJourneyWithError") {
+        String errorMessage = call.arguments;
+        completer.completeError(errorMessage);
+      }
+    });
+
     try {
-      await _productChannel.invokeMethod('fetchProduct');
-      print('Sent product request to iOS.');
+      await _journeyChannel.invokeMethod('createJourneyinAbyan', journeyType);
     } on PlatformException catch (e) {
-      print("Failed to send request: '${e.message}'.");
+      completer.completeError(e.message ?? "Failed to create journey");
+    } catch (e) {
+      completer.completeError(e);
     }
+
+    return completer.future;
   }
 
-  void listenForProducts() {
+  @override
+  Future<List<Product>> fetchProducts() async {
+    final Completer<List<Product>> completer = Completer<List<Product>>();
+
     _productChannel.setMethodCallHandler((call) async {
       if (call.method == "onProductsReceived") {
         String jsonString = call.arguments;
-        log(jsonString, name: "listenForProducts");
+        List<Product> products = Product.fromJsonList(jsonDecode(jsonString));
+        completer.complete(products);
       }
-    });
-  }
 
-  void listenForErrorProducts() {
-    _productChannel.setMethodCallHandler((call) async {
+      //NOTE: this error also listen for get form Info
       if (call.method == "onErrorProducts") {
         String errorMessage = call.arguments;
-        print("Error Products: $errorMessage");
+        completer.completeError(errorMessage);
       }
     });
-  }
 
-  Future<void> sendFormDataRequestToiOS(int productId) async {
     try {
-      await _formDataChannel.invokeMethod('fetchFormData', productId);
-      print("Method fetchFormData called successfully");
+      await _journeyChannel.invokeMethod('fetchProduct');
     } on PlatformException catch (e) {
-      print("Failed to call fetchFormData: ${e.message}");
+      completer.completeError(e.message ?? "Failed to fetch products");
+    } catch (e) {
+      completer.completeError(e);
     }
+
+    return completer.future;
   }
 
-  void listenForFormData() {
+  @override
+  Future<String> sendFormDataRequest(int productId) async {
+    final Completer<String> completer = Completer<String>();
+
     _formDataChannel.setMethodCallHandler((call) async {
       if (call.method == "onFormDataReceived") {
         String jsonString = call.arguments;
-        log(jsonString, name: "listenForFormData");
+        completer.complete(jsonString);
       }
-    });
-  }
 
-  void listenForEmptyFormInfo() {
-    _formDataChannel.setMethodCallHandler((call) async {
       if (call.method == "emptyFormInfofields") {
-        log("Empty Form Info fields");
+        completer.completeError("Selected product has an issue, please check the portal");
       }
     });
-  }
 
-  Future<void> callScanCardID(int documentType) async {
     try {
-      await _scanningChannel.invokeMethod('scanCard', documentType);
-      print('Method called in AppDelegate');
+      await _journeyChannel.invokeMethod('fetchFormData', productId);
     } on PlatformException catch (e) {
-      print("Failed to invoke method: '${e.message}'.");
+      completer.completeError(e.message ?? "Failed to fetch products");
     } catch (e) {
-      print("catch an error = $e}");
+      completer.completeError(e);
     }
+    return completer.future;
   }
 
-  void listenCardImages() {
+  @override
+  Future<String> callScanDocument(int documentType) async {
+    final Completer<String> completer = Completer<String>();
+
     _scanningChannel.setMethodCallHandler((call) async {
       if (call.method == "onDocumentsCaptured") {
-        log("Card Images Data");
+        completer.complete("Document Captured");
+        log("Document Captured", name: "ScanDocument");
       }
-    });
-  }
 
-  void listenCardError() {
-    _scanningChannel.setMethodCallHandler((call) async {
       if (call.method == "onErrorCapturingDocuments") {
         String errorMessage = call.arguments;
-        print("Error Card: $errorMessage");
+        completer.completeError(errorMessage);
       }
-    });
-  }
-  void listenToCardData() {
-    _scanningChannel.setMethodCallHandler((call) async {
+
       if (call.method == "documentResponseData") {
         String jsonString = call.arguments;
-        log(jsonString, name: "Card Data");
+        completer.complete(jsonString);
+        log("Document response data", name: "ScanDocument");
       }
-    });
-  }
 
-  void listenToKYCData() {
-    _scanningChannel.setMethodCallHandler((call) async {
       if (call.method == "kycResponseData") {
         String jsonString = call.arguments;
         updateKYC(jsonString);
-        log(jsonString, name: "KYC Data");
+        completer.complete(jsonString);
+        log("kyc response data", name: "ScanDocument");
       }
-    });
-  }
 
-  void listenToKYCDataError() {
-    _scanningChannel.setMethodCallHandler((call) async {
       if (call.method == "kycResponseError") {
         String errorMessage = call.arguments;
-        print("Error KYC: $errorMessage");
+        completer.completeError(errorMessage);
       }
     });
-  }
-  Future<void> updateKYC(String kycField) async {
+
     try {
-      final jsonData = jsonEncode({'kycField': kycField});
-      await _updateKYCChannel.invokeMethod('updateKYC', jsonData);
-      print('Method called in AppDelegate');
+      await _journeyChannel.invokeMethod('scanCard', documentType);
     } on PlatformException catch (e) {
-      print("Failed to invoke method: '${e.message}'.");
+      completer.completeError(e.message ?? "Failed to fetch products");
     } catch (e) {
-      print("catch an error = $e}");
+      completer.completeError(e);
     }
+
+    return completer.future;
   }
 
-  Future<void> scanYourFaceID() async {
-    try {
-      await _livenessCheckChannel.invokeMethod('scanfaceID');
-      print('Method called in AppDelegate');
-    } on PlatformException catch (e) {
-      print("Failed to invoke method: '${e.message}'.");
-    } catch (e) {
-      print("catch an error = $e}");
-    }
-  }
+  @override
+  Future<String> scanYourFaceID() async {
+    final Completer<String> completer = Completer<String>();
 
-  void listenToFaceIDData() {
     _livenessCheckChannel.setMethodCallHandler((call) async {
       if (call.method == "ImageMatchingResponseData") {
         String jsonString = call.arguments;
-        log(jsonString, name: "face id Data");
+        completer.complete(jsonString);
       }
-    });
-  }
 
-
-  void listenToFaceIDError() {
-    _livenessCheckChannel.setMethodCallHandler((call) async {
       if (call.method == "ImageMatchingErrorResponseData") {
         String errorMessage = call.arguments;
-        print("Error In Face ID scan: $errorMessage");
+        completer.completeError(errorMessage);
       }
     });
-  }
-  Future<void> closeJourney(String customerID) async {
+
     try {
-      await _closeJourneyChannel.invokeMethod('closeJourney', customerID);
+      await _journeyChannel.invokeMethod('scanfaceID');
+    } on PlatformException catch (e) {
+      completer.completeError(e.message ?? "Failed to fetch products");
+    } catch (e) {
+      completer.completeError(e);
+    }
+    return completer.future;
+  }
+
+  @override
+  Future<String> closeJourney(String customerID) async {
+    final Completer<String> completer = Completer<String>();
+    _closeJourneyChannel.setMethodCallHandler((call) async {
+      if (call.method == "didFinishCloseJourneyWithSuccess") {
+        completer.complete("Finish Close Journey Success");
+      }
+
+      if (call.method == "didFinishCloseWithError") {
+        String errorMessage = call.arguments;
+        completer.completeError(errorMessage);
+      }
+    });
+    try {
+      await _journeyChannel.invokeMethod('closeJourney', customerID);
+    } on PlatformException catch (e) {
+      completer.completeError(e.message ?? "Failed to fetch products");
+    } catch (e) {
+      completer.completeError(e);
+    }
+    return completer.future;
+  }
+
+  //todo
+  @override
+  Future<void> updateKYC(String kycField) async {
+    try {
+      final jsonData = jsonEncode({'kycField': kycField});
+      await _journeyChannel.invokeMethod('updateKYC', jsonData);
       print('Method called in AppDelegate');
     } on PlatformException catch (e) {
       print("Failed to invoke method: '${e.message}'.");
     } catch (e) {
       print("catch an error = $e}");
     }
-  }
-
-  void listenToCloseJourney() {
-    _closeJourneyChannel.setMethodCallHandler((call) async {
-      if (call.method == "didFinishCloseJourneyWithSuccess") {
-        log("Finish Close Journey Success");
-      }
-    });
-  }
-
-
-  void listenToCloseJourneyWithError() {
-    _closeJourneyChannel.setMethodCallHandler((call) async {
-      if (call.method == "didFinishCloseWithError") {
-        String errorMessage = call.arguments;
-        print("Error In Close Journey: $errorMessage");
-      }
-    });
   }
 }
