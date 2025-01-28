@@ -11,6 +11,7 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
     private var productChannel: FlutterMethodChannel?
     private var formDataChannel: FlutterMethodChannel?
     private var scanCardIDChannel: FlutterMethodChannel?
+    private var getKYCChannel: FlutterMethodChannel?
     private var updateKYCChannel: FlutterMethodChannel?
     private var livenessCheckChannel: FlutterMethodChannel?
     private var closeJourneyChannel: FlutterMethodChannel?
@@ -28,6 +29,7 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
         instance.formDataChannel = FlutterMethodChannel(name: "getFormData", binaryMessenger: messenger)
         instance.scanCardIDChannel = FlutterMethodChannel(name: "scanCardIDChannel", binaryMessenger: messenger)
         instance.updateKYCChannel = FlutterMethodChannel(name: "updateKYCChannel", binaryMessenger: messenger)
+        instance.getKYCChannel = FlutterMethodChannel(name: "getKYCChannel", binaryMessenger: messenger)
         instance.livenessCheckChannel = FlutterMethodChannel(name: "livenessCheckChannel", binaryMessenger: messenger)
         instance.closeJourneyChannel = FlutterMethodChannel(name: "closeJourneyChannel", binaryMessenger: messenger)
 
@@ -70,6 +72,8 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
             } else {
                 result(FlutterError(code: "INVALID_ARGUMENT", message: "Expected a string", details: nil))
             }
+        case "getKYC":
+            getKYCFields()
         case "updateKYC":
             updateKYCMethod(call: call, result: result)
         default:
@@ -141,6 +145,11 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
         Abyan.closeJourney.delegate = self
         Abyan.closeJourney.closeJourneyAPI(customerId: customerID)
     }
+    
+    private func getKYCFields(){
+        Abyan.kyc.delegate = self
+        Abyan.kyc.getOCRKYCFields(fieldValues: [], productId: self.selectedProduct ?? 0)
+    }
 
     private func updateKYCMethod(call: FlutterMethodCall, result: @escaping FlutterResult) {
         guard let arguments = call.arguments as? String else {
@@ -190,8 +199,8 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
             let jsonData: Data = try JSONEncoder().encode(response)
             let jsonString: String? = String(data: jsonData, encoding: .utf8)
             scanCardIDChannel?.invokeMethod("documentResponseData", arguments: jsonString)
-            Abyan.kyc.delegate = self
-            Abyan.kyc.getOCRKYCFields(fieldValues: [], productId: self.selectedProduct ?? 0)
+            
+           
         } catch {
             print("Failed to encode response to JSON")
         }
@@ -284,7 +293,7 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
     }
 
     public func kycFinishedWithError(error: AbyanError) {
-        scanCardIDChannel?.invokeMethod("kycResponseError", arguments: error.localizedDescription)
+        getKYCChannel?.invokeMethod("kycResponseError", arguments: error.localizedDescription)
 
     }
 
@@ -292,9 +301,9 @@ public class AbyanPlugin: NSObject, FlutterPlugin, AbyanJourneyDelegate, AbyanDo
         do {
             let jsonData: Data = try JSONEncoder().encode(fields)
             let jsonString: String? = String(data: jsonData, encoding: .utf8)
-            scanCardIDChannel?.invokeMethod("kycResponseData", arguments: jsonString)
+            getKYCChannel?.invokeMethod("kycResponseData", arguments: jsonString)
         } catch {
-            scanCardIDChannel?.invokeMethod("kycResponseError", arguments: "Catch Error in kyc Fields ")
+            getKYCChannel?.invokeMethod("kycResponseError", arguments: "Catch Error in kyc Fields ")
 
         }
     }

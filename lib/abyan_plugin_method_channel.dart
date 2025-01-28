@@ -16,6 +16,7 @@ class MethodChannelAbyanPlugin extends AbyanPluginPlatform {
   final MethodChannel _formDataChannel = const MethodChannel('getFormData');
   final MethodChannel _scanningChannel =
       const MethodChannel('scanCardIDChannel');
+  final MethodChannel _getKYCChannel = const MethodChannel('_getKYCChannel');
   final MethodChannel _updateKYCChannel =
       const MethodChannel('updateKYCChannel');
   final MethodChannel _livenessCheckChannel =
@@ -128,18 +129,6 @@ class MethodChannelAbyanPlugin extends AbyanPluginPlatform {
         completer.complete(jsonString);
         log("Document response data", name: "ScanDocument");
       }
-
-      if (call.method == "kycResponseData") {
-        String jsonString = call.arguments;
-        updateKYC(jsonString);
-        completer.complete(jsonString);
-        log("kyc response data", name: "ScanDocument");
-      }
-
-      if (call.method == "kycResponseError") {
-        String errorMessage = call.arguments;
-        completer.completeError(errorMessage);
-      }
     });
 
     try {
@@ -208,6 +197,35 @@ class MethodChannelAbyanPlugin extends AbyanPluginPlatform {
     try {
       final jsonData = jsonEncode({'kycField': kycField});
       await _journeyChannel.invokeMethod('updateKYC', jsonData);
+      print('Method called in AppDelegate');
+    } on PlatformException catch (e) {
+      print("Failed to invoke method: '${e.message}'.");
+    } catch (e) {
+      print("catch an error = $e}");
+    }
+  }
+ //
+
+  Future<void> getKYC() async {
+    final Completer<String> completer = Completer<String>();
+
+    _getKYCChannel.setMethodCallHandler((call) async {
+
+      if (call.method == "kycResponseData") {
+        String jsonString = call.arguments;
+        updateKYC(jsonString);
+        completer.complete(jsonString);
+        log("kyc response data", name: "ScanDocument");
+      }
+
+      if (call.method == "kycResponseError") {
+        String errorMessage = call.arguments;
+        completer.completeError(errorMessage);
+      }
+    });
+
+    try {
+      await _journeyChannel.invokeMethod('getKYC');
       print('Method called in AppDelegate');
     } on PlatformException catch (e) {
       print("Failed to invoke method: '${e.message}'.");

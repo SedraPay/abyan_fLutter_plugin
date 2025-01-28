@@ -48,7 +48,9 @@ abstract class AbyanPluginPlatform extends PlatformInterface {
   Future<String> closeJourney(String customerID) {
     throw UnimplementedError('closeJourney() has not been implemented.');
   }
-
+  Future<void> getKYC() {
+    throw UnimplementedError('getKYC() has not been implemented.');
+  }
   Future<void> updateKYC(String kycField) {
     throw UnimplementedError('updateKYC() has not been implemented.');
   }

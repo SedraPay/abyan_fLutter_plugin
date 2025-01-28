@@ -31,4 +31,8 @@ class AbyanPlugin {
   Future<void> updateKYC(String kycField) {
     return AbyanPluginPlatform.instance.updateKYC(kycField);
   }
+
+  Future<void> getKYC(String kycField) {
+    return AbyanPluginPlatform.instance.getKYC();
+  }
 }
