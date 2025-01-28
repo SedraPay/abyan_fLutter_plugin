@@ -1,20 +1,20 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:abyan_plugin/abyan_plugin.dart';
+import 'package:abyan_plugin/models/products.dart';
 import 'package:abyan_plugin_example/ui/dialogs/SimpleAlertDialog.dart';
 import 'package:flutter/material.dart';
 
-class ScanDocumentsScreen extends StatefulWidget {
-  ScanDocumentsScreen({super.key});
+class LivenessScreen extends StatefulWidget {
+  LivenessScreen({super.key});
 
   @override
-  _ScanDocumentsScreenState createState() => _ScanDocumentsScreenState();
+  _LivenessScreenState createState() => _LivenessScreenState();
 }
 
-class _ScanDocumentsScreenState extends State<ScanDocumentsScreen> {
+class _LivenessScreenState extends State<LivenessScreen> {
   final _abyanFlutterPlugin = AbyanPlugin();
-
-  final _formKey = GlobalKey<FormState>();
 
   bool isLoading = false;
 
@@ -31,8 +31,8 @@ class _ScanDocumentsScreenState extends State<ScanDocumentsScreen> {
               isLoading
                   ? Center(child: CircularProgressIndicator())
                   : FilledButton(
-                      onPressed: () => startDocumentScanProcess(context),
-                      child: Text("Scan Document Scan Process"),
+                      onPressed: () => startLivenessProcess(context),
+                      child: Text("Start Liveness Process"),
                     ),
             ],
           ),
@@ -41,13 +41,13 @@ class _ScanDocumentsScreenState extends State<ScanDocumentsScreen> {
     );
   }
 
-  Future<void> startDocumentScanProcess(BuildContext context) async {
+  Future<void> startLivenessProcess(BuildContext context) async {
     setState(() {
       isLoading = true;
     });
     try {
       String result =
-      await _abyanFlutterPlugin.scanDocument(1);
+      await _abyanFlutterPlugin.startLivenessCheck();
 
       var jsonObject = jsonDecode(result);
       var prettyString = const JsonEncoder.withIndent('  ').convert(jsonObject);
@@ -56,9 +56,6 @@ class _ScanDocumentsScreenState extends State<ScanDocumentsScreen> {
         context,
         'Scan document result',
         prettyString,
-        onPressed: () {
-          Navigator.pushNamed(context, "/liveness");
-        },
       );
     } catch (e) {
       showSimpleAlertDialog(context, 'Error', e.toString());

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:abyan_plugin/abyan_plugin.dart';
+import 'package:abyan_plugin_example/ui/screens/liveness_screen.dart';
 import 'package:abyan_plugin_example/ui/screens/product_form_screen.dart';
 import 'package:abyan_plugin_example/ui/screens/scan_documents_screen.dart';
 import 'package:abyan_plugin_example/ui/screens/select_product_screen.dart';
@@ -45,6 +46,7 @@ class _MyAppState extends State<MyApp> {
       '/selectProduct': (_) => SelectProductScreen(),
       '/productForm': (_) => ProductFormScreen(),
       '/scanDocuments': (_) => ScanDocumentsScreen(),
+      '/liveness': (_) => LivenessScreen(),
     };
   }
 // @override

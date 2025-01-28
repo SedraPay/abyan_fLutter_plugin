@@ -20,6 +20,8 @@ Abyan is an onboarding and KYC solution that helps businesses to verify their cu
   s.dependency 'Abyan', '~> 0.1.3'
   s.dependency 'Protobuf'
   s.dependency 'GoogleDataTransport'
+  s.dependency 'GoogleMLKit/FaceDetection'
+  s.dependency 'lottie-ios'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }

@@ -115,8 +115,8 @@ class MethodChannelAbyanPlugin extends AbyanPluginPlatform {
 
     _scanningChannel.setMethodCallHandler((call) async {
       if (call.method == "onDocumentsCaptured") {
-        completer.complete("Document Captured");
-        log("Document Captured", name: "ScanDocument");
+        //todo: add the ability to return the captured documents as path.
+        //completer.complete("Document Captured");
       }
 
       if (call.method == "onErrorCapturingDocuments") {
@@ -127,7 +127,6 @@ class MethodChannelAbyanPlugin extends AbyanPluginPlatform {
       if (call.method == "documentResponseData") {
         String jsonString = call.arguments;
         completer.complete(jsonString);
-        log("Document response data", name: "ScanDocument");
       }
     });
 
@@ -143,7 +142,7 @@ class MethodChannelAbyanPlugin extends AbyanPluginPlatform {
   }
 
   @override
-  Future<String> scanYourFaceID() async {
+  Future<String> startLivenessCheck() async {
     final Completer<String> completer = Completer<String>();
 
     _livenessCheckChannel.setMethodCallHandler((call) async {

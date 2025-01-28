@@ -19,8 +19,8 @@ class AbyanPlugin {
     return AbyanPluginPlatform.instance.callScanDocument(documentType);
   }
 
-  Future<String> scanYourFaceID() {
-    return AbyanPluginPlatform.instance.scanYourFaceID();
+  Future<String> startLivenessCheck() {
+    return AbyanPluginPlatform.instance.startLivenessCheck();
   }
 
   Future<String> closeJourney(String customerID) {

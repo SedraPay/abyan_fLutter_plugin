@@ -41,7 +41,7 @@ abstract class AbyanPluginPlatform extends PlatformInterface {
     throw UnimplementedError('callScanCardID() has not been implemented.');
   }
 
-  Future<String> scanYourFaceID() {
+  Future<String> startLivenessCheck() {
     throw UnimplementedError('scanYourFaceID() has not been implemented.');
   }
 
